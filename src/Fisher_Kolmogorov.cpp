@@ -127,9 +127,28 @@ Fisher_Kolmogorov::assemble_system()
         fe_values.get_function_values(solution_old, solution_old_loc);
 
         for (unsigned int q = 0; q < n_q; ++q)
-            {
-            // TODO: assemble the matrices
+        {
+            FullMatrix<double> D_matrix_loc(dim,dim);
+            FunctionD.matrix_value(fe_values.quadrature_point(q),
+                                        D_matrix_loc);
+            Tensor<2,dim> D_matrix_tensor;
+            for (unsigned int i = 0; i < dim; ++i){
+                for(unsigned int j =0; j < dim; ++j ){
+                    D_matrix_tensor[i][j] = D_matrix_loc(i,j);
+                }
             }
+                
+            for (unsigned int i = 0; i < dofs_per_cell; ++i)
+            {
+                for (unsigned int j = 0; j < dofs_per_cell; ++j)
+                {
+                    //Mass matrix/delta  
+                    cell_matrix(i, j) += fe_values.shape_value(i, q) *
+                                        fe_values.shape_value(j, q) / deltat *
+                                        fe_values.JxW(q);
+                }
+            }  
+        }
 
         cell->get_dof_indices(dof_indices);
 

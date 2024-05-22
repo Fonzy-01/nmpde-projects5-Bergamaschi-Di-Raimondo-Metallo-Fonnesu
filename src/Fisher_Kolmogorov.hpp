@@ -38,7 +38,49 @@ public:
     // Physical dimension (1D, 2D, 3D)
     static constexpr unsigned int dim = 3;
 
-    // TODO: all the functions
+    class FunctionAlpha : public Function<dim> 
+    {
+    public : 
+        virtual double 
+        value(const Point<dim> & /*p*/,
+            const unsigned int /*component*/ = 0) const override
+        {   
+            return 1.0;
+        }
+    }; 
+
+
+    class FunctionD : public Function<dim> 
+    {
+    public : 
+        virtual double 
+        matrix_value(const Point<dim> & /*p*/,
+            FullMatrix<double> &values) const override
+        {   
+            for(int i = 0; i < dim; i++ ){
+                for(int j = 0; j < dim; j++){
+                    if(i == j){
+                        //da ricontrollare 
+                        values(i,j) = 1.0; 
+                    }
+                    else{
+                        values(i,j) = 0.0; 
+                    }
+                }
+            }
+        }
+
+        virtual double 
+        value(const Point<dim> &/*p*/, const unsigned int component1 = 0, const unsigned int component2 = 0)  const override 
+        {
+            if(component1 ==  component2 ){
+                return 1.0; 
+            }
+            else{
+                return 0.0; 
+            }
+        }
+    }; 
 
     // Function for the forcing term.
     class ForcingTerm : public Function<dim>
@@ -48,7 +90,7 @@ public:
         value(const Point<dim> & /*p*/,
             const unsigned int /*component*/ = 0) const override
         {
-        return 0.0;
+            return 0.0;
         }
     };
 

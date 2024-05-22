@@ -9,7 +9,7 @@ int main(int argc, char* argv[]){
 
     double T = 1;
     double deltat = 0.05;
-    Fisher_Kolmogorov problem(/* FILE NAME */);
+    Fisher_Kolmogorov problem("..\brain_mesh.msh");
     problem.setup();
     problem.solve();
 
