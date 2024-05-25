@@ -128,6 +128,9 @@ Fisher_Kolmogorov::assemble_system()
 
         for (unsigned int q = 0; q < n_q; ++q)
         {
+            // Evaluate coefficients on this quadrature node.
+            const double alpha_loc = alpha.value(fe_values.quadrature_point(q));
+
             FullMatrix<double> D_matrix_loc(dim,dim);
             FunctionD.matrix_value(fe_values.quadrature_point(q),
                                         D_matrix_loc);
@@ -142,11 +145,42 @@ Fisher_Kolmogorov::assemble_system()
             {
                 for (unsigned int j = 0; j < dofs_per_cell; ++j)
                 {
-                    //Mass matrix/delta  
+                    // Mass matrix/delta  
                     cell_matrix(i, j) += fe_values.shape_value(i, q) *
-                                        fe_values.shape_value(j, q) / deltat *
-                                        fe_values.JxW(q);
+                                         fe_values.shape_value(j, q) / deltat *
+                                         fe_values.JxW(q);
+
+                    // First term of the stiffness matrix
+                    cell_matrix(i, j) += scalar_product(D_matrix_tensor * fe_values.shape_grad(j, q), 
+                                                        fe_values.shape_grad(i, q)) * 
+                                                        fe_values.JxW(q);
+                    
+                    // Second term of the stiffness matrix
+                    cell_matrix(i, j) -= (alpha_loc - 2.0 * alpha_loc * solution_loc[q]) * 
+                                         fe_values(j, q) *
+                                         fe_values(i, q) *
+                                         fe_values.JxW(q);
                 }
+
+                // Assemble the residual vector (with changed sign).
+
+                // Time derivative term.
+                cell_residual(i) -= (solution_loc[q] - solution_old_loc[q]) /
+                                    deltat * fe_values.shape_value(i, q) *
+                                    fe_values.JxW(q);
+
+                // Diffusion term.
+                cell_residual(i) -= scalar_product(D_matrix * solution_gradient_loc[q], 
+                                                   fe_values.shape_grad(i, q)) *
+                                                   fe_values.JxW(q);
+
+                // Non linear term.
+                cell_residual(i) += alpha_loc *
+                                    solution_loc *
+                                    (1 - solution_loc) * 
+                                    fe_values(j, q) *
+                                    fe_values(i, q) *
+                                    fe_values.JxW(q);
             }  
         }
 

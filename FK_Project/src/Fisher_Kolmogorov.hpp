@@ -156,7 +156,7 @@ protected:
     ForcingTerm forcing_term;
 
     // Initial conditions.
-    FunctionU0 u_0;
+    //FunctionU0 u_0;
 
     // Current time.
     double time;
