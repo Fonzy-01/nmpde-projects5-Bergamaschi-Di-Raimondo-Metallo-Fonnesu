@@ -16,10 +16,14 @@
 #include <deal.II/fe/mapping_fe.h>
 
 #include <deal.II/grid/grid_in.h>
+#include <deal.II/grid/grid_out.h>
+#include <deal.II/grid/tria.h>
+#include <deal.II/grid/grid_tools.h>
 
 #include <deal.II/lac/solver_cg.h>
 #include <deal.II/lac/trilinos_precondition.h>
 #include <deal.II/lac/trilinos_sparse_matrix.h>
+//#include <deal.II/lac/trilinos_sparsity_pattern.h>
 #include <deal.II/lac/vector.h>
 
 #include <deal.II/numerics/data_out.h>
@@ -53,12 +57,12 @@ public:
     class FunctionD : public Function<dim> 
     {
     public : 
-        virtual double 
+        virtual void 
         matrix_value(const Point<dim> & /*p*/,
-            FullMatrix<double> &values) const override
+            FullMatrix<double> &values) const /*override*/
         {   
-            for(int i = 0; i < dim; i++ ){
-                for(int j = 0; j < dim; j++){
+            for(unsigned int i = 0; i < dim; i++ ){
+                for(unsigned int j = 0; j < dim; j++){
                     if(i == j){
                         //da ricontrollare 
                         values(i,j) = 1.0; 
@@ -71,16 +75,24 @@ public:
         }
 
         virtual double 
-        value(const Point<dim> &/*p*/, const unsigned int component1 = 0, const unsigned int component2 = 0)  const override 
+        value(const Point<dim> &/*p*/, const unsigned int component1 = 0, const unsigned int component2 = 0)  const /*override*/ 
         {
-            if(component1 ==  component2 ){
-                return 1.0; 
-            }
-            else{
-                return 0.0; 
-            }
+            return (component1 == component2) ? 1.0 : 0.0;
         }
     }; 
+
+    // Function for the u_0.
+    class FunctionU0 : public Function<dim>
+    {
+    public:
+        virtual double
+        value(const Point<dim> & /*p*/,
+            const unsigned int /*component*/ = 0) const override
+        {
+            //sistemare
+        return 3.0/*something*/;
+        }
+    };
 
     // Function for the forcing term.
     class ForcingTerm : public Function<dim>
@@ -156,7 +168,7 @@ protected:
     ForcingTerm forcing_term;
 
     // Initial conditions.
-    //FunctionU0 u_0;
+    FunctionU0 u_0;
 
     // Current time.
     double time;

@@ -66,7 +66,7 @@ Fisher_Kolmogorov::setup()
         pcout << "  Initializing the sparsity pattern" << std::endl;
 
         TrilinosWrappers::SparsityPattern sparsity(locally_owned_dofs,
-                                                MPI_COMM_WORLD);
+                                               MPI_COMM_WORLD);
         DoFTools::make_sparsity_pattern(dof_handler, sparsity);
         sparsity.compress();
 
@@ -132,7 +132,7 @@ Fisher_Kolmogorov::assemble_system()
             const double alpha_loc = alpha.value(fe_values.quadrature_point(q));
 
             FullMatrix<double> D_matrix_loc(dim,dim);
-            FunctionD.matrix_value(fe_values.quadrature_point(q),
+            D.matrix_value(fe_values.quadrature_point(q),
                                         D_matrix_loc);
             Tensor<2,dim> D_matrix_tensor;
             for (unsigned int i = 0; i < dim; ++i){
@@ -157,8 +157,9 @@ Fisher_Kolmogorov::assemble_system()
                     
                     // Second term of the stiffness matrix
                     cell_matrix(i, j) -= (alpha_loc - 2.0 * alpha_loc * solution_loc[q]) * 
-                                         fe_values(j, q) *
-                                         fe_values(i, q) *
+                    //controllare se è shape_grad oppure shave_value
+                                         fe_values.shape_value(j, q) *
+                                         fe_values.shape_value(i, q) *
                                          fe_values.JxW(q);
                 }
 
@@ -169,17 +170,23 @@ Fisher_Kolmogorov::assemble_system()
                                     deltat * fe_values.shape_value(i, q) *
                                     fe_values.JxW(q);
 
+                // this is used to make sure that the multiplication between D_matrix and solution_gradient_loc can happen
+                Tensor<2, dim, double> D_matrix_tensor;
+                for (unsigned int i = 0; i < dim; ++i) {
+                    for (unsigned int j = 0; j < dim; ++j) {
+                        D_matrix_tensor[i][j] = D_matrix_loc(i, j);
+                    }
+                }
                 // Diffusion term.
-                cell_residual(i) -= scalar_product(D_matrix * solution_gradient_loc[q], 
+                cell_residual(i) -= scalar_product(D_matrix_tensor * solution_gradient_loc[q], 
                                                    fe_values.shape_grad(i, q)) *
                                                    fe_values.JxW(q);
 
                 // Non linear term.
                 cell_residual(i) += alpha_loc *
-                                    solution_loc *
-                                    (1 - solution_loc) * 
-                                    fe_values(j, q) *
-                                    fe_values(i, q) *
+                                    solution_loc[q] *
+                                    (1 - solution_loc[q]) * 
+                                    fe_values.shape_value(i,q)*
                                     fe_values.JxW(q);
             }  
         }

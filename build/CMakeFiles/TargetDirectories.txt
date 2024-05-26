@@ -1,0 +1,3 @@
+/home/jellyfish/shared-folder/nmpde-projects5-Bergamaschi-Di-Raimondo-Metallo-Fonnesu/build/CMakeFiles/Fisher-Kolmogorov-Solver.dir
+/home/jellyfish/shared-folder/nmpde-projects5-Bergamaschi-Di-Raimondo-Metallo-Fonnesu/build/CMakeFiles/edit_cache.dir
+/home/jellyfish/shared-folder/nmpde-projects5-Bergamaschi-Di-Raimondo-Metallo-Fonnesu/build/CMakeFiles/rebuild_cache.dir
