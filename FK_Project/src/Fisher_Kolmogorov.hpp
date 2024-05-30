@@ -18,12 +18,10 @@
 #include <deal.II/grid/grid_in.h>
 #include <deal.II/grid/grid_out.h>
 #include <deal.II/grid/tria.h>
-#include <deal.II/grid/grid_tools.h>
 
 #include <deal.II/lac/solver_cg.h>
 #include <deal.II/lac/trilinos_precondition.h>
 #include <deal.II/lac/trilinos_sparse_matrix.h>
-//#include <deal.II/lac/trilinos_sparsity_pattern.h>
 #include <deal.II/lac/vector.h>
 
 #include <deal.II/numerics/data_out.h>
@@ -40,8 +38,9 @@ class Fisher_Kolmogorov
 public:
 
     // Physical dimension (1D, 2D, 3D)
-    static constexpr unsigned int dim = 3;
+    static constexpr unsigned int dim = 2;
 
+    // Function describing the value of the spreading coefficient -> the bigger alpha is, the faster is the spreading
     class FunctionAlpha : public Function<dim> 
     {
     public : 
@@ -49,11 +48,11 @@ public:
         value(const Point<dim> & /*p*/,
             const unsigned int /*component*/ = 0) const override
         {   
-            return 1.0;
+            return 3.0;
         }
     }; 
 
-
+    // Function describing the behaviour of D
     class FunctionD : public Function<dim> 
     {
     public : 
@@ -61,36 +60,46 @@ public:
         matrix_value(const Point<dim> & /*p*/,
             FullMatrix<double> &values) const /*override*/
         {   
+            // Here go through the diagonal the values for the extracellular diffusion
             for(unsigned int i = 0; i < dim; i++ ){
                 for(unsigned int j = 0; j < dim; j++){
                     if(i == j){
                         //da ricontrollare 
-                        values(i,j) = 1.0; 
+                        values(i,j) = 0.1; 
                     }
                     else{
                         values(i,j) = 0.0; 
                     }
                 }
             }
+
+            // Here should go the values for the d_axn
+            // Example: values(1,1) += 0.5
         }
 
         virtual double 
-        value(const Point<dim> &/*p*/, const unsigned int component1 = 0, const unsigned int component2 = 0)  const /*override*/ 
+        value(const Point<dim> &/*p*/, const unsigned int component1 = 0, const unsigned int component2 = 1)  const /*override*/ 
         {
             return (component1 == component2) ? 1.0 : 0.0;
         }
     }; 
 
-    // Function for the u_0.
-    class FunctionU0 : public Function<dim>
+    // Function for the initial concentration in a specific region of the mesh
+    class FunctionC0 : public Function<dim>
     {
     public:
         virtual double
-        value(const Point<dim> & /*p*/,
+        value(const Point<dim> &p,
             const unsigned int /*component*/ = 0) const override
         {
-            //sistemare
-        return 3.0/*something*/;
+            // Point<dim> origin;
+            Point<dim> starting_point(0.5, 0);
+            if(p.distance(starting_point) <= 0.1)
+            {
+                return 0.3;
+            }
+            
+            return 0;
         }
     };
 
@@ -168,7 +177,7 @@ protected:
     ForcingTerm forcing_term;
 
     // Initial conditions.
-    FunctionU0 u_0;
+    FunctionC0 c_0;
 
     // Current time.
     double time;

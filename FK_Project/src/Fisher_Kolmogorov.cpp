@@ -157,7 +157,6 @@ Fisher_Kolmogorov::assemble_system()
                     
                     // Second term of the stiffness matrix
                     cell_matrix(i, j) -= (alpha_loc - 2.0 * alpha_loc * solution_loc[q]) * 
-                    //controllare se è shape_grad oppure shave_value
                                          fe_values.shape_value(j, q) *
                                          fe_values.shape_value(i, q) *
                                          fe_values.JxW(q);
@@ -170,13 +169,6 @@ Fisher_Kolmogorov::assemble_system()
                                     deltat * fe_values.shape_value(i, q) *
                                     fe_values.JxW(q);
 
-                // this is used to make sure that the multiplication between D_matrix and solution_gradient_loc can happen
-                Tensor<2, dim, double> D_matrix_tensor;
-                for (unsigned int i = 0; i < dim; ++i) {
-                    for (unsigned int j = 0; j < dim; ++j) {
-                        D_matrix_tensor[i][j] = D_matrix_loc(i, j);
-                    }
-                }
                 // Diffusion term.
                 cell_residual(i) -= scalar_product(D_matrix_tensor * solution_gradient_loc[q], 
                                                    fe_values.shape_grad(i, q)) *
@@ -199,14 +191,12 @@ Fisher_Kolmogorov::assemble_system()
 
     jacobian_matrix.compress(VectorOperation::add);
     residual_vector.compress(VectorOperation::add);
-
-    // TODO: understand what to do with boundaries
 }
 
 void 
 Fisher_Kolmogorov::solve_linear_system()
 {
-    SolverControl solver_control(1000, 1e-6 * residual_vector.l2_norm());
+    SolverControl solver_control(1000, 1e-12 * residual_vector.l2_norm());
 
     SolverCG<TrilinosWrappers::MPI::Vector> solver(solver_control);
     TrilinosWrappers::PreconditionSSOR preconditioner;
@@ -225,8 +215,6 @@ Fisher_Kolmogorov::solve_newton()
 
     unsigned int n_iter = 0;
     double residual_norm = residual_tolerance + 1;
-
-    // TODO: understand what to do with boundaries
 
     while (n_iter < n_max_iters && residual_norm > residual_tolerance)
     {
@@ -284,7 +272,7 @@ Fisher_Kolmogorov::solve()
     {
         pcout << "Applying the initial condition" << std::endl;
 
-        VectorTools::interpolate(dof_handler, u_0, solution_owned);
+        VectorTools::interpolate(dof_handler, c_0, solution_owned);
         solution = solution_owned;
 
         // Output the initial solution.
