@@ -14,10 +14,14 @@
 #include <deal.II/fe/fe_values.h>
 #include <deal.II/fe/fe_values_extractors.h>
 #include <deal.II/fe/mapping_fe.h>
+#include <deal.II/fe/fe_q.h>
 
 #include <deal.II/grid/grid_in.h>
 #include <deal.II/grid/grid_out.h>
 #include <deal.II/grid/tria.h>
+
+#include <deal.II/grid/grid_generator.h>
+
 
 #include <deal.II/lac/solver_cg.h>
 #include <deal.II/lac/trilinos_precondition.h>
@@ -27,6 +31,12 @@
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/numerics/matrix_tools.h>
 #include <deal.II/numerics/vector_tools.h>
+
+
+#include <deal.II/lac/dynamic_sparsity_pattern.h>
+#include <deal.II/lac/precondition.h>
+#include <deal.II/lac/sparse_matrix.h>
+#include <deal.II/lac/vector.h>
 
 #include <fstream>
 #include <iostream>
@@ -46,7 +56,7 @@ public:
     public : 
         virtual double 
         value(const Point<dim> & /*p*/,
-            const unsigned int /*component*/ = 0) const override
+            const unsigned int /*component*/ = 0) const /*override*/
         {   
             return 3.0;
         }
@@ -58,7 +68,7 @@ public:
     public : 
         virtual void 
         matrix_value(const Point<dim> & /*p*/,
-            FullMatrix<double> &values) const override
+            FullMatrix<double> &values) const /*override*/
         {   
             // Here go through the diagonal the values for the extracellular diffusion
             for(unsigned int i = 0; i < dim; i++ ){
@@ -78,7 +88,7 @@ public:
         }
 
         virtual double 
-        value(const Point<dim> &/*p*/, const unsigned int component1 = 0, const unsigned int component2 = 1)  const override 
+        value(const Point<dim> &/*p*/, const unsigned int component1 = 0, const unsigned int component2 = 1)  const /*override*/
         {
             return (component1 == component2) ? 1.0 : 0.0;
         }
@@ -90,7 +100,7 @@ public:
     public:
         virtual double
         value(const Point<dim> &p,
-            const unsigned int /*component*/ = 0) const override
+            const unsigned int /*component*/ = 0) const /*override*/
         {
             // Point<dim> origin;
             Point<dim> starting_point(0.5, 0);
@@ -123,12 +133,14 @@ public:
     // Constructor. We provide the final time, time step Delta t and theta method
     // parameter as constructor arguments.
     Fisher1D(const std::string &mesh_file_name_,
+                const unsigned int &N_, 
                 const unsigned int &r_,
                 const double &T_,
                 const double &deltat_)
-        : T(T_)
-        , mesh_file_name(mesh_file_name_)
+        : mesh_file_name(mesh_file_name_)
+        , N(N_)
         , r(r_)
+        , T(T_)
         , deltat(deltat_)
     {}
 
@@ -208,10 +220,13 @@ protected:
     SparseMatrix<double> system_matrix;
 
     // System right-hand side
-    Vector<double> system_rhs;
+    Vector<double> residual_vector;
 
     // System solution
     Vector<double> solution;
+    Vector<double> solution_old; 
+    Vector<double> solution_owned; 
+    Vector<double> delta_owned; 
 };
 
 #endif 

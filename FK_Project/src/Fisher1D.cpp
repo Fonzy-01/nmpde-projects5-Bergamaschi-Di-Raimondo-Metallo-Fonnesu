@@ -72,9 +72,11 @@ Fisher1D::setup()
 
     // We initialize the right-hand side and solution vectors.
     std::cout << "  Initializing the system right-hand side" << std::endl;
-    system_rhs.reinit(dof_handler.n_dofs());
+    residual_vector.reinit(dof_handler.n_dofs());
     std::cout << "  Initializing the solution vector" << std::endl;
-    solution.reinit(dof_handler.n_dofs());
+    solution.reinit(dof_handler.n_dofs()); 
+    solution_owned.reinit(dof_handler.n_dofs()); 
+    delta_owned.reinit(dof_handler.n_dofs()); 
   }
 }
 
@@ -96,7 +98,7 @@ Fisher1D::assemble_system()
   std::vector<types::global_dof_index> dof_indices(dofs_per_cell);
 
   system_matrix = 0.0;
-  system_rhs = 0.0;
+  residual_vector = 0.0;
 
   // Value and gradient of the solution on the cell.
   std::vector<double> solution_loc(n_q);
@@ -171,11 +173,11 @@ Fisher1D::assemble_system()
     cell->get_dof_indices(dof_indices);
 
     system_matrix.add(dof_indices, cell_matrix);
-    system_rhs.add(dof_indices, cell_residual);
+    residual_vector.add(dof_indices, cell_residual);
 }
 
   system_matrix.compress(VectorOperation::add);
-  system_rhs.compress(VectorOperation::add);
+  residual_vector.compress(VectorOperation::add);
 }
 
 
@@ -220,22 +222,44 @@ Fisher1D::solve_newton()
 void
 Fisher1D::solve()
 {
-  std::cout << "===============================================" << std::endl;
+  std::cout << "===============================================" << std::endl;  
+   std::cout << "===============================================" << std::endl;
 
-  // Here we specify the maximum number of iterations of the iterative solver,
-  // and its tolerance.
-  SolverControl solver_control(1000, 1e-6 * system_rhs.l2_norm());
+    time = 0.0;
 
-  // Since the system matrix is spd, we solve the
-  // system using the conjugate gradient method.
-  SolverCG<Vector<double>> solver(solver_control);
+    // Apply the initial condition.
+    {
+        std::cout << "Applying the initial condition" << std::endl;
+        VectorTools::interpolate(dof_handler, c_0, solution_owned);
+        std::cout << " Sono qui " << std::endl; 
+        solution = solution_owned;
 
-  std::cout << "  Solving the linear system" << std::endl;
-  // We don't use any preconditioner for now, so we pass the identity matrix as
-  // preconditioner.
-  solver.solve(system_matrix, solution, system_rhs, PreconditionIdentity());
-  std::cout << "  " << solver_control.last_step() << " CG iterations"
-            << std::endl;
+        // Output the initial solution.
+        output(0);
+        std::cout << "-----------------------------------------------" << std::endl;
+    }
+
+    unsigned int time_step = 0;
+
+    while (time < 1)
+    {
+        time += deltat;
+        ++time_step;
+
+        // Store the old solution, so that it is available for assembly.
+        solution_old = solution;
+
+        std::cout << "n = " << std::setw(3) << time_step << ", t = " << std::setw(5)
+                << std::fixed << time << std::endl;
+
+        // At every time step, we invoke Newton's method to solve the non-linear
+        // problem.
+        solve_newton();
+
+        output(time_step);
+
+        std::cout << std::endl;
+    }
 }
 
 
@@ -249,13 +273,13 @@ Fisher1D::solve_linear_system()
     preconditioner.initialize(
         system_matrix, PreconditionSSOR<>::AdditionalData(1.0));
 
-    solver.solve(system_matrix, solution, system_rhs, preconditioner);
+    solver.solve(system_matrix, delta_owned, residual_vector, preconditioner);
     std::cout << "  " << solver_control.last_step() << " CG iterations" << std::endl;
 }
 
 
 void
-Fisher1D::output() const
+Fisher1D::output(const unsigned int &time_step) const
 {
   std::cout << "===============================================" << std::endl;
 
