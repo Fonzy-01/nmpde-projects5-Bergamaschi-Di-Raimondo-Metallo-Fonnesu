@@ -58,7 +58,7 @@ public:
         value(const Point<dim> & /*p*/,
             const unsigned int /*component*/ = 0) const /*override*/
         {   
-            return 3.0;
+            return 2.0;
         }
     }; 
 
@@ -66,32 +66,13 @@ public:
     class FunctionD : public Function<dim> 
     {
     public : 
-        virtual void 
-        matrix_value(const Point<dim> & /*p*/,
-            FullMatrix<double> &values) const /*override*/
-        {   
-            // Here go through the diagonal the values for the extracellular diffusion
-            for(unsigned int i = 0; i < dim; i++ ){
-                for(unsigned int j = 0; j < dim; j++){
-                    if(i == j){
-                        //da ricontrollare 
-                        values(i,j) = 0.1; 
-                    }
-                    else{
-                        values(i,j) = 0.0; 
-                    }
-                }
-            }
-
-            // Here should go the values for the d_axn
-            // Example: values(1,1) += 0.5
-        }
-
         virtual double 
-        value(const Point<dim> &/*p*/, const unsigned int component1 = 0, const unsigned int component2 = 1)  const /*override*/
-        {
-            return (component1 == component2) ? 1.0 : 0.0;
+        value(const Point<dim> & /*p*/,
+            const unsigned int /*component*/ = 0) const /*override*/
+        {   
+            return 0.0004;
         }
+
     }; 
 
     // Function for the initial concentration in a specific region of the mesh
@@ -102,11 +83,11 @@ public:
         value(const Point<dim> &p,
             const unsigned int /*component*/ = 0) const /*override*/
         {
-            // Point<dim> origin;
-            Point<dim> starting_point(0.5, 0);
+            //Point<dim> origin;
+            Point<dim> starting_point(0.0);
             if(p.distance(starting_point) <= 0.1)
             {
-                return 0.3;
+                return 0.1;
             }
             
             return 0;

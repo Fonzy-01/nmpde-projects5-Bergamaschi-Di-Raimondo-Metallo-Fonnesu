@@ -8,7 +8,7 @@ Fisher1D::setup()
   // Create the mesh for the 1D case.
   {
     std::cout << "Initializing the mesh" << std::endl;
-    GridGenerator::subdivided_hyper_cube(mesh, N + 1, 0.0, 1.0, true);
+    GridGenerator::subdivided_hyper_cube(mesh, N + 1, -1.0, 1.0, true);
     std::cout << "  Number of elements = " << mesh.n_active_cells()
               << std::endl;
 
@@ -138,8 +138,8 @@ Fisher1D::assemble_system()
                               fe_values.JxW(q);
 
           // First term of the stiffness matrix
-          cell_matrix(i, j) += D_loc * fe_values.shape_grad(j, q)[0] *
-                              fe_values.shape_grad(i, q)[0] *
+          cell_matrix(i, j) += D_loc * fe_values.shape_grad(j, q) *
+                              fe_values.shape_grad(i, q) *
                               fe_values.JxW(q);
 
           // Second term of the stiffness matrix
@@ -157,8 +157,8 @@ Fisher1D::assemble_system()
                             fe_values.JxW(q);
 
         // Diffusion term.
-        cell_residual(i) -= D_loc * derivative_loc[q][0] *
-                            fe_values.shape_grad(i, q)[0] *
+        cell_residual(i) -= D_loc * derivative_loc[q] *
+                            fe_values.shape_grad(i, q) *
                             fe_values.JxW(q);
 
         // Non linear term.
@@ -241,7 +241,7 @@ Fisher1D::solve()
 
     unsigned int time_step = 0;
 
-    while (time < 1)
+    while (time < T-0.5*deltat)
     {
         time += deltat;
         ++time_step;
@@ -291,7 +291,7 @@ Fisher1D::output(const unsigned int &time_step) const
   data_out.build_patches();
 
   const std::string output_file_name =
-    "output-" + std::to_string(N + 1) + ".vtk";
+    "output-" + std::to_string(time_step+ 1) + ".vtk";
   std::ofstream output_file(output_file_name);
 
   // Writing the data to the file in VTK format.
