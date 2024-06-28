@@ -48,7 +48,7 @@ public:
         value(const Point<dim> & /*p*/,
             const unsigned int /*component*/ = 0) const override
         {   
-            return 3.0;
+            return 4.0;
         }
     }; 
 
@@ -65,7 +65,7 @@ public:
                 for(unsigned int j = 0; j < dim; j++){
                     if(i == j){
                         //da ricontrollare 
-                        values(i,j) = 0.1; 
+                        values(i,j) = 0.05; 
                     }
                     else{
                         values(i,j) = 0.0; 
@@ -74,7 +74,8 @@ public:
             }
 
             // Here should go the values for the d_axn
-            // Example: values(1,1) += 0.5
+            // Example: values(1,1) += 0.05;
+            values(1,1) += 0.5;
         }
 
         virtual double 

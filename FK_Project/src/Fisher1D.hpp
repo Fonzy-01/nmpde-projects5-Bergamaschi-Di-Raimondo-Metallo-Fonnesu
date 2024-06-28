@@ -113,13 +113,11 @@ public:
 
     // Constructor. We provide the final time, time step Delta t and theta method
     // parameter as constructor arguments.
-    Fisher1D(const std::string &mesh_file_name_,
-                const unsigned int &N_, 
+    Fisher1D(const unsigned int &N_, 
                 const unsigned int &r_,
                 const double &T_,
                 const double &deltat_)
-        : mesh_file_name(mesh_file_name_)
-        , N(N_)
+        : N(N_)
         , r(r_)
         , T(T_)
         , deltat(deltat_)
@@ -180,7 +178,7 @@ protected:
     const double deltat;
 
     // Mesh file name.
-    const std::string mesh_file_name;
+    //const std::string mesh_file_name;
 
     // Mesh.
     Triangulation<dim> mesh;
