@@ -85,9 +85,13 @@ public:
         {
             //Point<dim> origin;
             Point<dim> starting_point(0.0);
+            double max_value = 0.1;
+            double std_dev = 0.0333;
+
             if(p.distance(starting_point) <= 0.1)
             {
-                return 0.1;
+                return max_value
+                        * std::exp(-(p.distance(starting_point) * p.distance(starting_point)) / (2 * std_dev * std_dev));
             }
             
             return 0;

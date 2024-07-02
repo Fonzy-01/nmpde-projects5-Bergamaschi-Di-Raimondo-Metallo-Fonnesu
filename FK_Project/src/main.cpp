@@ -1,4 +1,4 @@
-/*#include "Fisher_Kolmogorov.hpp"
+#include "Fisher_Kolmogorov.hpp"
 
 
 int main(int argc, char* argv[]){
@@ -7,7 +7,7 @@ int main(int argc, char* argv[]){
 
     const unsigned int degree = 1;
 
-    double T = 1;
+    double T = 2;
     double deltat = 0.01;
 
     Fisher_Kolmogorov problem("../mesh/mesh-square-40.msh", degree, T, deltat);
@@ -15,9 +15,9 @@ int main(int argc, char* argv[]){
     problem.solve();
     
     return 0;
-}*/
+}
 
-
+/*
 #include "Fisher1D.hpp"
 
 int main(int argc, char* argv[]){
@@ -32,4 +32,4 @@ int main(int argc, char* argv[]){
     problem.solve();
     
     return 0;
-}
+}*/
