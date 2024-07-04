@@ -7,10 +7,10 @@ int main(int argc, char* argv[]){
 
     const unsigned int degree = 1;
 
-    double T = 2;
-    double deltat = 0.01;
+    double T = 5;
+    double deltat = 0.1;
 
-    Fisher_Kolmogorov problem("../mesh/mesh-square-40.msh", degree, T, deltat);
+    Fisher_Kolmogorov problem("../mesh/mesh-cube-10.msh", degree, T, deltat);
     problem.setup();
     problem.solve();
     

@@ -38,7 +38,7 @@ class Fisher_Kolmogorov
 public:
 
     // Physical dimension (1D, 2D, 3D)
-    static constexpr unsigned int dim = 2;
+    static constexpr unsigned int dim = 3;
 
     // Function describing the value of the spreading coefficient -> the bigger alpha is, the faster is the spreading
     class FunctionAlpha : public Function<dim> 
@@ -48,7 +48,7 @@ public:
         value(const Point<dim> & /*p*/,
             const unsigned int /*component*/ = 0) const override
         {   
-            return 4.0;
+            return 1.0;
         }
     }; 
 
@@ -65,7 +65,7 @@ public:
                 for(unsigned int j = 0; j < dim; j++){
                     if(i == j){
                         //da ricontrollare 
-                        values(i,j) = 0.05; 
+                        values(i,j) = 0.1; 
                     }
                     else{
                         values(i,j) = 0.0; 
@@ -75,7 +75,7 @@ public:
 
             // Here should go the values for the d_axn
             // Example: values(1,1) += 0.05;
-            values(1,1) += 0.5;
+            values(1,1) += 10.0;
         }
 
         virtual double 
@@ -94,8 +94,8 @@ public:
             const unsigned int /*component*/ = 0) const override
         {
             // Point<dim> origin;
-            Point<dim> starting_point(0, 0);
-            double max_value = 0.1;
+            Point<dim> starting_point(0.0, 0.0, 0.0);
+            double max_value = 0.95;
             double std_dev = 0.0333;
 
             if(p.distance(starting_point) <= 0.3)
