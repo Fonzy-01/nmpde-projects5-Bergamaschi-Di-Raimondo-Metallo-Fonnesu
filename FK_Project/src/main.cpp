@@ -10,7 +10,7 @@ int main(int argc, char* argv[]){
     double T = 5;
     double deltat = 0.1;
 
-    Fisher_Kolmogorov problem("../mesh/mesh-cube-10.msh", degree, T, deltat);
+    Fisher_Kolmogorov problem("../mesh/brain_mesh.msh", degree, T, deltat);
     problem.setup();
     problem.solve();
     

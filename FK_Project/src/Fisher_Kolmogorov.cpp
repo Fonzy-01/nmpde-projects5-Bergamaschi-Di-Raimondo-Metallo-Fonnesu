@@ -165,15 +165,14 @@ Fisher_Kolmogorov::assemble_system()
                 // Assemble the residual vector (with changed sign).
 
                 // Time derivative term.
+                
                 cell_residual(i) -= (solution_loc[q] - solution_old_loc[q]) /
                                     deltat * fe_values.shape_value(i, q) *
                                     fe_values.JxW(q);
-
                 // Diffusion term.
                 cell_residual(i) -= scalar_product(D_matrix_tensor * solution_gradient_loc[q], 
                                                    fe_values.shape_grad(i, q)) *
-                                                   fe_values.JxW(q);
-
+                                                   fe_values.JxW(q);        
                 // Non linear term.
                 cell_residual(i) += alpha_loc *
                                     solution_loc[q] *
@@ -215,11 +214,21 @@ Fisher_Kolmogorov::solve_newton()
 
     unsigned int n_iter = 0;
     double residual_norm = residual_tolerance + 1;
-
+    
     while (n_iter < n_max_iters && residual_norm > residual_tolerance)
     {
+        if (residual_norm > residual_tolerance){
+             pcout << " residual norm prima : " << residual_norm << " " << residual_vector.l2_norm() << std::endl; 
+        }        
         assemble_system();
+        if (residual_norm > residual_tolerance){
+             pcout << " residual norm dopo : " << residual_norm << " "<< residual_vector.l2_norm() << std::endl; 
+        } 
         residual_norm = residual_vector.l2_norm();
+
+        if (residual_norm > residual_tolerance){
+             pcout << " residual norm aggiorn : " << residual_norm << std::endl; 
+        }
 
         pcout << "  Newton iteration " << n_iter << "/" << n_max_iters
             << " - ||r|| = " << std::scientific << std::setprecision(6)

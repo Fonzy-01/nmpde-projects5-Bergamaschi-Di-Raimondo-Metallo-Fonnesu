@@ -94,14 +94,15 @@ public:
             const unsigned int /*component*/ = 0) const override
         {
             // Point<dim> origin;
-            Point<dim> starting_point(0.0, 0.0, 0.0);
+            Point<dim> starting_point(40.0, 70.0, 60.0);  
             double max_value = 0.95;
-            double std_dev = 0.0333;
+            double std_dev = 10;
 
-            if(p.distance(starting_point) <= 0.3)
+            if(p.distance(starting_point) <= 20 )
             {
                 return max_value
                         * std::exp(-(p.distance(starting_point) * p.distance(starting_point)) / (2 * std_dev * std_dev));
+            
             }
             
             return 0;
