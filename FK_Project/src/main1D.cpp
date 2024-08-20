@@ -1,0 +1,15 @@
+#include "Fisher1D.hpp"
+
+int main(int argc, char* argv[]){
+
+    const unsigned int degree = 1;
+    double T = 20;
+    double deltat = 0.1;
+    const unsigned int N = 199; 
+
+    Fisher1D problem(N ,degree, T, deltat);
+    problem.setup();
+    problem.solve();
+    
+    return 0;
+}

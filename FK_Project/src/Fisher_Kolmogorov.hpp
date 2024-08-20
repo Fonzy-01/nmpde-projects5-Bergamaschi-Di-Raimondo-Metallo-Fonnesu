@@ -48,7 +48,7 @@ public:
         value(const Point<dim> & /*p*/,
             const unsigned int /*component*/ = 0) const override
         {   
-            return 1.0;
+            return 3.0;
         }
     }; 
 
@@ -75,7 +75,7 @@ public:
 
             // Here should go the values for the d_axn
             // Example: values(1,1) += 0.05;
-            values(1,1) += 10.0;
+            values(1,1) += 0.5;
         }
 
         virtual double 
@@ -93,7 +93,18 @@ public:
         value(const Point<dim> &p,
             const unsigned int /*component*/ = 0) const override
         {
-            // Point<dim> origin;
+            /*
+            Point<dim> origin;
+            double max_value = 0.95;
+            double std_dev = 0.33;
+
+            if(p.distance(origin) <= 0.2 )
+            {
+                return max_value
+                        * std::exp(-(p.distance(origin) * p.distance(origin)) / (2 * std_dev * std_dev));
+            
+            }*/
+
             Point<dim> starting_point(40.0, 70.0, 60.0);  
             double max_value = 0.95;
             double std_dev = 10;

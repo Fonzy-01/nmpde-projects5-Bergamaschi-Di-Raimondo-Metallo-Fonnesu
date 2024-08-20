@@ -3,5 +3,7 @@ project(Fisker_Kolmogorov_Solver LANGUAGES CXX C)
 
 include(../common/cmake-common.cmake)
 
-add_executable(FK_Project src/main.cpp src/Fisher_Kolmogorov.cpp src/Fisher1D.cpp)
+add_executable(FK_Project src/main.cpp src/Fisher_Kolmogorov.cpp)
 deal_ii_setup_target(FK_Project)
+add_executable(FK_Project_1D src/main1D.cpp src/Fisher1D.cpp)
+deal_ii_setup_target(FK_Project_1D)
