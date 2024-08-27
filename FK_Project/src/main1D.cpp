@@ -1,6 +1,6 @@
 #include "Fisher1D.hpp"
 
-int main(int argc, char* argv[]){
+int main(int /*argc*/, char* /*argv*/[]){
 
     const unsigned int degree = 1;
     double T = 20;

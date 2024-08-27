@@ -10,6 +10,14 @@ To build the executable, make sure you have loaded the needed modules with
 ```bash
 $ module load gcc-glibc dealii
 ```
+
+## Creation of the mesh
+The 1D mesh is directly created through the code, while the 3D mesh is obtained in the following way:
+```bash
+$ cd mesh
+$ make
+```
+
 Then run the following commands:
 ```bash
 $ mkdir build

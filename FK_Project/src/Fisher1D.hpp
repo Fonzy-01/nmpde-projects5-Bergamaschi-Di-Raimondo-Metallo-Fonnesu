@@ -167,9 +167,6 @@ protected:
     // Current time.
     double time;
 
-    // Final time.
-    const double T;
-
     // N+1 is the number of elements.
     const unsigned int N;
 
@@ -177,6 +174,9 @@ protected:
 
     // Polynomial degree.
     const unsigned int r;
+
+    // Final time.
+    const double T;
 
     // Time step.
     const double deltat;
