@@ -216,19 +216,9 @@ Fisher_Kolmogorov::solve_newton()
     double residual_norm = residual_tolerance + 1;
     
     while (n_iter < n_max_iters && residual_norm > residual_tolerance)
-    {
-        if (residual_norm > residual_tolerance){
-             pcout << " residual norm prima : " << residual_norm << " " << residual_vector.l2_norm() << std::endl; 
-        }        
+    {     
         assemble_system();
-        if (residual_norm > residual_tolerance){
-             pcout << " residual norm dopo : " << residual_norm << " "<< residual_vector.l2_norm() << std::endl; 
-        } 
         residual_norm = residual_vector.l2_norm();
-
-        if (residual_norm > residual_tolerance){
-             pcout << " residual norm aggiorn : " << residual_norm << std::endl; 
-        }
 
         pcout << "  Newton iteration " << n_iter << "/" << n_max_iters
             << " - ||r|| = " << std::scientific << std::setprecision(6)
