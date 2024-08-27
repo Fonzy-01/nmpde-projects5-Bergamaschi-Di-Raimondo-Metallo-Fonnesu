@@ -231,7 +231,6 @@ Fisher1D::solve()
     {
         std::cout << "Applying the initial condition" << std::endl;
         VectorTools::interpolate(dof_handler, c_0, solution_owned);
-        std::cout << " Sono qui " << std::endl; 
         solution = solution_owned;
 
         // Output the initial solution.
