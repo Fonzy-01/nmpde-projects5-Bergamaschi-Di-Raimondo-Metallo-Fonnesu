@@ -6,8 +6,8 @@ int main(int argc, char* argv[]){
 
     const unsigned int degree = 1;
 
-    double T = 2;
-    double deltat = 0.1;
+    double T = 50;
+    double deltat = 1.0;
 
     Fisher_Kolmogorov problem("../mesh/brain-h3.0.msh", degree, T, deltat);
     problem.setup();

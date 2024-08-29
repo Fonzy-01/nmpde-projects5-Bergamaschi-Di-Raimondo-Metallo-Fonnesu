@@ -48,7 +48,7 @@ public:
         value(const Point<dim> & /*p*/,
             const unsigned int /*component*/ = 0) const override
         {   
-            return 3.0;
+            return 0.5;
         }
     }; 
 
@@ -65,7 +65,7 @@ public:
                 for(unsigned int j = 0; j < dim; j++){
                     if(i == j){
                         //da ricontrollare 
-                        values(i,j) = 0.1; 
+                        values(i,j) = 1.0; 
                     }
                     else{
                         values(i,j) = 0.0; 
@@ -74,8 +74,7 @@ public:
             }
 
             // Here should go the values for the d_axn
-            // Example: values(1,1) += 0.05;
-            values(1,1) += 0.5;
+            // Example: values(1,1) += 3.0;
         }
 
         virtual double 
@@ -93,7 +92,7 @@ public:
         value(const Point<dim> &p,
             const unsigned int /*component*/ = 0) const override
         {
-            /*
+            /* Useful starting condition when dealing with squares or cubes
             Point<dim> origin;
             double max_value = 0.95;
             double std_dev = 0.33;
@@ -109,7 +108,7 @@ public:
             double max_value = 0.95;
             double std_dev = 10;
 
-            if(p.distance(starting_point) <= 20 )
+            if(p.distance(starting_point) <= 10 )
             {
                 return max_value
                         * std::exp(-(p.distance(starting_point) * p.distance(starting_point)) / (2 * std_dev * std_dev));
